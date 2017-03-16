@@ -1,18 +1,56 @@
-// Given a credit card number, this function should return a string with the 
-// name of a network, like 'MasterCard' or 'American Express'
-// Example: detectNetwork('343456789012345') should return 'American Express'
-
-// How can you tell one card network from another? Easy! 
-// There are two indicators:
-//   1. The first few numbers (called the prefix)
-//   2. The number of digits in the number (called the length)
-
 var detectNetwork = function(cardNumber) {
-  // Note: `cardNumber` will always be a string
-  // The Diner's Club network always starts with a 38 or 39 and is 14 digits long
-  // The American Express network always starts with a 34 or 37 and is 15 digits long
+	var cardNumberLength = cardNumber.length;
 
-  // Once you've read this, go ahead and try to implement this function, then return to the console.
+	var prefix = function(prefixLength){
+		return parseInt(cardNumber.substring(0, prefixLength));
+	}
+
+	var prefix1 = prefix(1);
+	var prefix2 = prefix(2);
+	var prefix3 = prefix(3);
+	var prefix4 = prefix(4);
+	var prefix6 = prefix(6);
+
+	var maestroPrefixes = [5018, 5020, 5038, 6304];
+	var mastercardPrefixes = [51,52,53,54,55];
+	var switchPrefixes = [4903, 4905, 4911, 4936, 6333, 6759]
+	var longSwitchPrefixes = [564182, 633110]
+
+	var isVisaPrefix = prefix1 === 4;
+	var isMasterCardPrefix = mastercardPrefixes.includes(prefix2);
+	var isDiscoverPrefix = prefix4 === 6011 || (prefix3 >= 644 && prefix3 <= 649) || prefix2 === 65;
+	var isDinersPrefix = prefix2 === 38 || prefix2 === 39;
+	var isAmexPrefix = prefix2 === 34 || prefix2 === 37;
+	var isMaestroPrefix = maestroPrefixes.includes(prefix4);
+	var isChinaPrefix = prefix6 >= 622126 && prefix6 <= 622925 || prefix3 >= 624 && prefix3 <= 626 || prefix4 >= 6282 && prefix4 <= 6288;
+	var isSwitchPrefix = switchPrefixes.includes(prefix4) || longSwitchPrefixes.includes(prefix6);
+	
+	if(isSwitchPrefix && (cardNumberLength === 16 || cardNumberLength === 18 || cardNumberLength === 19)){
+		return "Switch"
+	}else
+	if(isVisaPrefix && (cardNumberLength === 13 || cardNumberLength === 16 || cardNumberLength === 19)){
+		return "Visa";
+	}else
+	if (isMasterCardPrefix && cardNumberLength === 16){
+		return "MasterCard"
+	}else
+	if(isDiscoverPrefix && (cardNumberLength === 16 || cardNumberLength === 19)){
+		return "Discover"
+	}else 
+	if(isDinersPrefix && cardNumberLength === 14){
+		return "Diner's Club";
+	}else
+	if(isAmexPrefix && cardNumberLength === 15){
+		return "American Express";
+	}else 
+	if(isMaestroPrefix && cardNumberLength >= 12 && cardNumberLength <= 19){
+		return "Maestro"
+	}else 
+	if(isChinaPrefix && cardNumberLength >= 16 && cardNumberLength <= 19){
+		return "China UnionPay"
+	}else
+	{
+		return "Not a valid card";
+	}
 };
-
 
